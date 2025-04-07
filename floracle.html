@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Floracle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Merriweather', serif;
+      margin: 0;
+      padding: 0;
+      background-color: #ffdce5;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+      margin-top: 10vh;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 2.5rem; /* Adjusted font size for "Floracle" (1 smaller) */
+      color: #333;
+      margin: 0;
+    }
+
+    .subtitle {
+      font-size: 1.2rem; /* "Roll" button size remains the same */
+      text-decoration: underline;
+      color: #333;
+      cursor: pointer;
+    }
+
+    h1::before,
+    h1::after {
+      content: "❁";
+      font-size: 2.5rem;
+      margin: 0 10px;
+    }
+
+    .quote-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0 10%;
+    }
+
+    .quote {
+      font-size: 1.1rem;
+      color: #333;
+      font-style: italic;
+      max-width: 80%;
+      text-align: center;
+    }
+
+    .attribution {
+      font-size: 0.9rem;
+      color: #333;
+      font-style: italic;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .contribute-link {
+      position: absolute;
+      bottom: 10vh;
+      width: 100%;
+      text-align: center;
+    }
+
+    .contribute-link a {
+      font-size: 0.95rem;
+      color: #333;
+      text-decoration: underline;
+      transition: color 0.3s ease;
+    }
+
+    .contribute-link a:hover {
+      color: #aa3355;
+    }
+
+    .footer-note {
+      position: absolute;
+      bottom: 2vh;
+      width: 100%;
+      font-size: 0.8rem;
+      text-align: center;
+      color: #333;
+      padding: 0 1rem;
+    }
+
+    .footer-note a {
+      color: #333;
+      text-decoration: underline;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="content">
+    <h1>Floracle</h1>
+    <div class="subtitle" onclick="showRandomQuote()">roll</div>
+    <div class="quote-container">
+      <div class="quote" id="quoteDisplay"></div>
+      <div class="attribution" id="quoteAttribution"></div>
+    </div>
+  </div>
+
+  <div class="contribute-link">
+    <a href="https://docs.google.com/document/d/1ptHUtLLaUsmrrAHdGQwn8WiERP4WkFjjz30nryaSdOQ/edit?tab=t.0" target="_blank">
+      ✍︎ add quote(s)
+    </a>
+  </div>
+
+ <div class="footer-note">
+    The Floracle, a collaborative project by the <a href="https://sisterspinster.net/Flowering-Round" target="_blank">Flowering Round</a> cohort of the year 2024, was inspired by <a href="https://www.antheusdesign.com/" target="_blank">Devin Antheus</a>’s <a href="https://sapphomanteion.com/" target="_blank">Sapphomanteion</a>.
+  </div>
+
+  <script>
+    const quotes = [
+      // Existing quotes
+      { text: "steadfast as dandelions / knowing our truth is medicine / we grow where we aren’t wanted / our roots wider than your nightmares", attribution: "adrienne maree brown, “steadfast,” 2024" },
+      { text: "Water! Rain! Streams! / Oh Lord, the streams! / For the watering of the fattening sheep, / O Lord, rain and clouds / for the watering of the cows and the horses / O Lord, a pouring / for the fulfillment of the wheat, / for the birth of the robust, golden children. / O Lord, a deluge / for the refreshment of ourselves, / body and soul.", attribution: "Palestinian Sheperd’s prayer" },
+      { text: "In this place you Kypris taking up / in gold cups delicately / nectar mingled with festivities: / pour", attribution: "Sappho, 2. If Not, Winter - Fragments of Sappho (Anne Carson)" },
+      { text: "Only last week I went out among the thorns and said / to the wild roses: / deny me not, / but suffer my devotion.", attribution: "from the poem: Have You Ever Tried To Enter The Long Black Branches (Devotions, The Selected Poems of Mary Oliver)" },
+      { text: "Because of you, in gardens of blossoming / Flowers I ache from the perfumes of spring.", attribution: "Pablo Neruda, from the poem: Love" },
+      { text: "There was something special about them that evening. They almost seemed to be looking at her, trying to speak to her", attribution: "the flowers festival, Elsa Beskow" },
+
+      // Empty quote slots 
+      { text: "At night, I open the window / and ask the moon to come / and press its face against / mine.", attribution: "Rilke, from the poem: Some Kiss We Want" },
+      { text: "Comforted / a solace of ripe plums", attribution: "W. C. Williams, To a Poor Old Woman " },
+      { text: "Unseen, the salt ocean lifts its form - chicories and daisies tied, released, seem hardly flowers alone", attribution: "W. C. Williams, Flowers by the Sea" },
+      { text: "A tiny insect journeys across the kingdom of one ivory petal and into the heart of the blossom. O, Small Mercies sliced from the root.", attribution: "ellen bass, roses" },
+      { text: "A honeyed musk sublimes from their petals, veined fine as an infant’s eyelids, and spiraling like any embryo—fish, snake, or human.", attribution: "ellen bass, roses" },
+      { text: "And my heart, that fat pink bud, cowers in its thicket of ribs.", attribution: "The April grasses | Ellen Bass" },
+      { text: "Pale gray-green clusters, lips about to open, wave their lavender tongues, soften the air with their sweet breath", attribution: "The April grasses | Ellen Bass" },
+      { text: "O, to take what we love inside, to carry within us an orchard, to eat", attribution: "From Blossoms LI-YOUNG LEE" },
+      { text: "an eye snack and nostril snack", attribution: "Whenever I Saw You I Handed You a Bouquet, and BY SHARON OLDS" },
+      { text: "tongue-tied with respectful adoring, with gobbling the sight of you the sound, the bouquets saying mother-", attribution: "Whenever I Saw You I Handed You a Bouquet, and BY SHARON OLDS" },
+      { text: "tan and green orchid, are you a little lady holding up your skirts above wet grass? do you wear a feather where that white is showing? is there any color shut inside your heart?", attribution: "Orchid Lady BY HILDA CONKLING" },
+      { text: "there is just the difference of your way of bowing, and your tilted bonnet and your satin shoe!", attribution: "Orchid Lady BY HILDA CONKLING" },
+      { text: "It's good to be soft when they push you down Oh, God, turn me into a flower", attribution: "God Turn Me Into a Flower -  Weyes Blood" },
+      { text: "I made wine from the lilac tree Put my heart in its recipe Makes me see what I want to see And be what I want to be", attribution: "lilac wine jeff buckley" },
+      { text: "At least I have the flowers of myself, and my thoughts, no god / can take that ", attribution: "“Euridyce,” H.D." },
+      { text: "rhododendron / O wide rose, / open, quiver, pause / and close", attribution: "“The Dancer,” H.D." },
+      { text: "the temple bell stops- / but the sound keeps coming / out of the flowers.", attribution: "Matsuo Basho" },
+      { text: "Offer the sun / a sprig of parsley, / a buttercup. He too is one / who has known these small things.", attribution: "Guillevic, tr. Levertov" },
+      { text: "Yarrow is feathering up; / divinatory bloodwort, sanguinary- / it shifts living marrow, dissolves / clots, staunches new wounds- / How can I be this useful? ", attribution: "Autumn Richardson" },
+      { text: "The ghost of Spring / has reappeared, / clearing my throat / of winter / I make the first move", attribution: "Joseph Ceravolo" },
+      { text: "It changes, but only more into the person", attribution: "Jane Hirschfield, Quartz Clock" },
+      { text: "I pull a clump of low hanging flowers, breathe their tang of sex and death – leave them on our doorstep to wither overnight, a May charm against changelings, or harm ", attribution: "Jessica Traynor, Hawthorn" },
+      { text: "Stuff your nose with flowers to dukk scent until you see your own body, white and lithe, slip away from you", attribution: "Jessica Traynor, Rue" },
+      { text: "Keep testing the spiny leaves the spiny heart", attribution: "Jane Hirshfield, My Species" },
+      { text: "“I was once.” Said not in self-pity or praise. This dignity we allow barn owl, ego, oyster. ", attribution: "Jane Hirshfield, Works & Loves" },
+      { text: "And the roses thick on the fences Were soft and bright, able to renew themselves As a woman, finally, cannot do", attribution: "Mary Oliver, Roses " },
+      { text: "Each pond with its blazing lilies is a prayer heard and answered lavishly, every morning, whether or not you have ever dared to be happy, whether or not you have ever dared to pray", attribution: "Mary Oliver, Morning Poem" },
+      { text: "Do you love this world? Do you cherish your humble and silky life? Do you adore the green grass, with its terror underneath? ", attribution: "Mary Oliver, Peonies" },
+      { text: "Shy beauties bowing in the flower bed ", attribution: "Jessica Traynor, Hellebore" },
+      { text: "Do you also hurry, half-dressed and barefoot, into the garden, and softly, exclaiming all their dearness, fill your arms with the white and pink flowers, ", attribution: "Mary Oliver, Peonies" },
+      { text: "with their honeyed heaviness, their lush trembling, their eagerness to be wild and perfect for a moment, before they are nothing, forever?", attribution: "Mary Oliver, Peonies" },
+      { text: "and they open – pools of lace, white and pink 00 and all day the black ants climb over them, ", attribution: "Mary Oliver, Peonies" },
+      { text: "Where life has no purpose and it is neither civil nor intelligent, it begins to rain, it begins to smell like the bodies of flowers.", attribution: "Mary Oliver, Rain " },
+      { text: "Hawthorn: spines long as my little finger that glint in the sun before the leaves come out, small white flowers like the wild rose and fruits people don’t eat. ", attribution: "Marge Piercy, May apple" },
+      { text: "Alone I am clear as clean ice. I sleep short hours, stop cooking sauces, and every day like a desert monk I contemplate death in each apple core and woodash. ", attribution: "Marge piercy, May apple " },
+      { text: "I become nocturnal. My eyes glow in the dark. The moist rich parts of me contract underground into tubers. What stands up still is strong but crotchety, the village witch people come to with savory troubles, all ears and teeth. ", attribution: "Marge piercy, May apple " },
+      { text: "in so many poppies, they could not be named, revealing themselves, in each petal’s sexual brightness, wanting so much to be found", attribution: "Marge piercy, May apple " },
+      { text: "The same wanting that finds itself here now, humming within us, carrying hammer or groceries, hiding its wings ", attribution: "Marge piercy, May apple " },
+      { text: "And when you look for truth, look under the rosebush. There, browning in the grass, the scattered syllables of certainty. What you once held whole in your hand – changed. Beyond gathering.", attribution: "Believe, Faye George" },
+      { text: "Bells on a branch / Bright red buds / Drops on a wand, a whip / Under the sign of fire / I offer you red leaves / From the eucalyptus, the sound / Of trumpets, warmth, love", attribution: "Ithell Colquhoun, “Diagrams of Love I”" },
+      { text: "I am the untrodden path / Turning far back / That leads beside daylight / Unspoken word unlit moon / Flower unbreathed-on submerged plant / Star unreached-for / Crown of pearls.", attribution: "Ithell Colquhoun, “Wedding of Shades”" },
+      { text: "I am the Several. Plum and gorge.", attribution: "Taisia Kitaiskaia, What Do Asparagus Dream of? They Dream of Blood " },
+      { text: "And your rapt attention afraid of itself like women rotating azaleas. ", attribution: "Taisia Kitaiskaia, What Do Asparagus Dream of? They Dream of Blood " },
+      { text: "What is magic? Picture an egg yolk, that huge yellow throw-up sun. Dementedly shining, falling out of itself, birthed and reverent. ", attribution: "Rebecca Tamas, Interrogation (1) " },
+      { text: "I am a rose of Sharon, / a lily of the valleys", attribution: "author unknown, The Song of Songs, Tanakh" },
+      { text: "and the rosegardens and the jessamine / and geraniums and cactuses and Gibraltar as a girl where I was a Flower of the mountain yes / when I put the rose in my hair like the Andalusian girls used / or shall I wear a red yes", attribution: "James Joyce, Molly Bloom’s soliloquy, Ulysses" },
+      { text: "I love flowers / I’d love to have the whole place swimming in roses God of heaven theres nothing like nature ", attribution: "James Joyce, Molly Bloom’s soliloquy, Ulysses" },
+      { text: "So lillies, so tenderly when my dreams reflect them / Seeming fragrant, ah / Were sun in their grief", attribution: "Julia Holter, “So Lillies” " },
+      { text: "child of Kronos with violets in her lap / setting aside anger the one with violets in her lap ", attribution: "Sappho transl. Anne Carson, “If Not, Winter” " },
+      { text: "Go to your fields and your gardens, and you shall learn that it is the pleasure of the bee to gather honey of the flower, / But it is also the pleasure of the flower to yield its honey to the bee. / For to the bee a flower is a fountain of life, / And to the flower a bee is a messenger of love, / And to both, bee and flower, the giving and the receiving of pleasure is a need and an ecstasy.", attribution: "“On Pleasure,” Khalil Gibran" },
+      { text: "To make a prairie it takes a clover and one bee, / One clover, and a bee. / And revery. / The revery alone will do, / If bees are few.", attribution: "“To Make a Prairie,” Emily Dickinson " },
+      { text: "Be amazed, simply blown away / Live on without getting off your cloud", attribution: "Leave a light on - Marble Sounds " },
+      { text: "I cannot change / night into day / So sure / I can leave a light on / Leave a light on for you", attribution: "Leave a light on - Marble Sounds " },
+      { text: "The dew of the white chrysanthemum / of my house / (dripping) every day. / In how many ages will it / collect and / become a pool? ", attribution: "Kiyowara Motosuke" },
+      { text: "It doesn’t have to be/ the blue Iris, it could be/ weeds in a vacant lot, or a few/ small stones; just/ pay attention", attribution: "Praying -  Mary Oliver" },
+      { text: "Deep in their roots, all flowers keep the light. ", attribution: "Theodore Roethke " },
+      { text: "Lilac and star and bird twined with the chant of my soul", attribution: "When Lilacs Last in the Dooryard Bloom’d - Walt Whitman" },
+      { text: "O death, I cover you over with roses and early lilies, / But mostly and now the lilac that blooms the first", attribution: "When Lilacs Last in the Dooryard Bloom’d - Walt Whitman" },
+      { text: "Copious I break, I break the sprigs from the bushes, / With loaded arms I come, pouring for you, / For you and the coffins all of you O death", attribution: "When Lilacs Last in the Dooryard Bloom’d - Walt Whitman" },
+      { text: "Sing on there in the swamp, / O singer bashful and tender, I hear your notes, I hear your call, ", attribution: "When Lilacs Last in the Dooryard Bloom’d - Walt Whitman" },
+      { text: "Barefoot. And with rose petals in your hair.", attribution: "Winter Rose - Patricia A. McKillip" },
+      { text: "Do not assume I am a child because I wear flower wreaths in my hair / In the wintertime, their petals shrivel to reveal the obsidian bones of a crown underneath", attribution: "PERSEPHONE IS NOT A NYMPH - k.k." },
+      { text: "and the earth with its winged seeds, like a poet in his thoughts, travels", attribution: "Anabasis -  St. John Perse" },
+      { text: "I will make a palace fit for you and me, of green days in forest and blue days at sea", attribution: "I Will Make You Brooches - Robert Louis Stevenson" },
+      { text: "Yonder the long horizon lies, and there, by night and day / The old ships draw to home again, the young ships sail away", attribution: "Wander-Thirst -  Gerard Gould " },
+      { text: "Our palaces are the tents we carry with us. We dwell in those tents, busied with the present, and without overmuch care for the future.", attribution: "The Gypsy Maiden -  Cervantes" }
+    ];
+
+    function showRandomQuote() {
+      const randomIndex = Math.floor(Math.random() * quotes.length);
+      const quote = quotes[randomIndex];
+      document.getElementById("quoteDisplay").textContent = `"${quote.text}"`;
+      document.getElementById("quoteAttribution").textContent = quote.attribution;
+    }
+  </script>
+</body>
+</html>
